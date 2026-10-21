@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-21T14:20:00.000Z",
+  "title": "Design System: Universe Keyboard",
+  "extensions": {
+    "colorMeta": {
+      "n-50": { "role": "neutral", "displayName": "Paper", "tonalRamp": ["oklch(15% 0.0041 157.18)", "oklch(26% 0.0041 157.18)", "oklch(38% 0.0041 157.18)", "oklch(49% 0.0041 157.18)", "oklch(61% 0.0041 157.18)", "oklch(72% 0.0041 157.18)", "oklch(84% 0.0041 157.18)", "oklch(95% 0.0041 157.18)"] },
+      "n-100": { "role": "neutral", "displayName": "Stage", "tonalRamp": ["oklch(15% 0.0100 155.09)", "oklch(26% 0.0100 155.09)", "oklch(38% 0.0100 155.09)", "oklch(49% 0.0100 155.09)", "oklch(61% 0.0100 155.09)", "oklch(72% 0.0100 155.09)", "oklch(84% 0.0100 155.09)", "oklch(95% 0.0100 155.09)"] },
+      "n-300": { "role": "neutral", "displayName": "Soft Text", "tonalRamp": ["oklch(15% 0.0139 152.54)", "oklch(26% 0.0139 152.54)", "oklch(38% 0.0139 152.54)", "oklch(49% 0.0139 152.54)", "oklch(61% 0.0139 152.54)", "oklch(72% 0.0139 152.54)", "oklch(84% 0.0139 152.54)", "oklch(95% 0.0139 152.54)"] },
+      "n-500": { "role": "neutral", "displayName": "Muted", "tonalRamp": ["oklch(15% 0.0090 156.99)", "oklch(26% 0.0090 156.99)", "oklch(38% 0.0090 156.99)", "oklch(49% 0.0090 156.99)", "oklch(61% 0.0090 156.99)", "oklch(72% 0.0090 156.99)", "oklch(84% 0.0090 156.99)", "oklch(95% 0.0090 156.99)"] },
+      "n-800": { "role": "neutral", "displayName": "Raised Ink", "tonalRamp": ["oklch(15% 0.0112 156.40)", "oklch(26% 0.0112 156.40)", "oklch(38% 0.0112 156.40)", "oklch(49% 0.0112 156.40)", "oklch(61% 0.0112 156.40)", "oklch(72% 0.0112 156.40)", "oklch(84% 0.0112 156.40)", "oklch(95% 0.0112 156.40)"] },
+      "n-900": { "role": "neutral", "displayName": "Chrome Ink", "tonalRamp": ["oklch(15% 0.0087 153.06)", "oklch(26% 0.0087 153.06)", "oklch(38% 0.0087 153.06)", "oklch(49% 0.0087 153.06)", "oklch(61% 0.0087 153.06)", "oklch(72% 0.0087 153.06)", "oklch(84% 0.0087 153.06)", "oklch(95% 0.0087 153.06)"] },
+      "line": { "role": "neutral", "displayName": "Chrome Line", "tonalRamp": ["oklch(15% 0.0129 154.53)", "oklch(26% 0.0129 154.53)", "oklch(38% 0.0129 154.53)", "oklch(49% 0.0129 154.53)", "oklch(61% 0.0129 154.53)", "oklch(72% 0.0129 154.53)", "oklch(84% 0.0129 154.53)", "oklch(95% 0.0129 154.53)"] },
+      "bench": { "role": "neutral", "displayName": "Bench Slab", "tonalRamp": ["oklch(15% 0.0126 156.97)", "oklch(26% 0.0126 156.97)", "oklch(38% 0.0126 156.97)", "oklch(49% 0.0126 156.97)", "oklch(61% 0.0126 156.97)", "oklch(72% 0.0126 156.97)", "oklch(84% 0.0126 156.97)", "oklch(95% 0.0126 156.97)"] },
+      "g-500": { "role": "primary", "displayName": "GitHub Green", "tonalRamp": ["oklch(15% 0.2127 145.72)", "oklch(26% 0.2127 145.72)", "oklch(38% 0.2127 145.72)", "oklch(49% 0.2127 145.72)", "oklch(61% 0.2127 145.72)", "oklch(72% 0.2127 145.72)", "oklch(84% 0.2127 145.72)", "oklch(95% 0.2127 145.72)"] },
+      "g-300": { "role": "primary", "displayName": "Green Hover and Dark-Shell Focus", "tonalRamp": ["oklch(15% 0.1907 148.95)", "oklch(26% 0.1907 148.95)", "oklch(38% 0.1907 148.95)", "oklch(49% 0.1907 148.95)", "oklch(61% 0.1907 148.95)", "oklch(72% 0.1907 148.95)", "oklch(84% 0.1907 148.95)", "oklch(95% 0.1907 148.95)"] },
+      "g-700": { "role": "primary", "displayName": "Green Deep (Stage Focus)", "tonalRamp": ["oklch(15% 0.1634 145.98)", "oklch(26% 0.1634 145.98)", "oklch(38% 0.1634 145.98)", "oklch(49% 0.1634 145.98)", "oklch(61% 0.1634 145.98)", "oklch(72% 0.1634 145.98)", "oklch(84% 0.1634 145.98)", "oklch(95% 0.1634 145.98)"] },
+      "g-900": { "role": "primary", "displayName": "Green Ink (declared, unused)", "tonalRamp": ["oklch(15% 0.0366 167.67)", "oklch(26% 0.0366 167.67)", "oklch(38% 0.0366 167.67)", "oklch(49% 0.0366 167.67)", "oklch(61% 0.0366 167.67)", "oklch(72% 0.0366 167.67)", "oklch(84% 0.0366 167.67)", "oklch(95% 0.0366 167.67)"] },
+      "danger-ground": { "role": "secondary", "displayName": "Erase Ground", "tonalRamp": ["oklch(15% 0.0473 20.68)", "oklch(26% 0.0473 20.68)", "oklch(38% 0.0473 20.68)", "oklch(49% 0.0473 20.68)", "oklch(61% 0.0473 20.68)", "oklch(72% 0.0473 20.68)", "oklch(84% 0.0473 20.68)", "oklch(95% 0.0473 20.68)"] },
+      "danger-line": { "role": "secondary", "displayName": "Erase Border", "tonalRamp": ["oklch(15% 0.1063 22.85)", "oklch(26% 0.1063 22.85)", "oklch(38% 0.1063 22.85)", "oklch(49% 0.1063 22.85)", "oklch(61% 0.1063 22.85)", "oklch(72% 0.1063 22.85)", "oklch(84% 0.1063 22.85)", "oklch(95% 0.1063 22.85)"] },
+      "cardboard-lid": { "role": "tertiary", "displayName": "Cardboard Lid", "tonalRamp": ["oklch(15% 0.0821 71.51)", "oklch(26% 0.0821 71.51)", "oklch(38% 0.0821 71.51)", "oklch(49% 0.0821 71.51)", "oklch(61% 0.0821 71.51)", "oklch(72% 0.0821 71.51)", "oklch(84% 0.0821 71.51)", "oklch(95% 0.0821 71.51)"] },
+      "cardboard-front": { "role": "tertiary", "displayName": "Cardboard Front", "tonalRamp": ["oklch(15% 0.0878 67.09)", "oklch(26% 0.0878 67.09)", "oklch(38% 0.0878 67.09)", "oklch(49% 0.0878 67.09)", "oklch(61% 0.0878 67.09)", "oklch(72% 0.0878 67.09)", "oklch(84% 0.0878 67.09)", "oklch(95% 0.0878 67.09)"] },
+      "cardboard-side": { "role": "tertiary", "displayName": "Cardboard Side", "tonalRamp": ["oklch(15% 0.0857 66.73)", "oklch(26% 0.0857 66.73)", "oklch(38% 0.0857 66.73)", "oklch(49% 0.0857 66.73)", "oklch(61% 0.0857 66.73)", "oklch(72% 0.0857 66.73)", "oklch(84% 0.0857 66.73)", "oklch(95% 0.0857 66.73)"] },
+      "cardboard-ink": { "role": "tertiary", "displayName": "Box Print Ink", "tonalRamp": ["oklch(15% 0.0212 66.64)", "oklch(26% 0.0212 66.64)", "oklch(38% 0.0212 66.64)", "oklch(49% 0.0212 66.64)", "oklch(61% 0.0212 66.64)", "oklch(72% 0.0212 66.64)", "oklch(84% 0.0212 66.64)", "oklch(95% 0.0212 66.64)"] },
+      "housing-red": { "role": "tertiary", "displayName": "Red Bottom Housing", "tonalRamp": ["oklch(15% 0.2068 12.12)", "oklch(26% 0.2068 12.12)", "oklch(38% 0.2068 12.12)", "oklch(49% 0.2068 12.12)", "oklch(61% 0.2068 12.12)", "oklch(72% 0.2068 12.12)", "oklch(84% 0.2068 12.12)", "oklch(95% 0.2068 12.12)"] },
+      "plate-blue": { "role": "tertiary", "displayName": "Blue Plate", "tonalRamp": ["oklch(15% 0.1392 263.21)", "oklch(26% 0.1392 263.21)", "oklch(38% 0.1392 263.21)", "oklch(49% 0.1392 263.21)", "oklch(61% 0.1392 263.21)", "oklch(72% 0.1392 263.21)", "oklch(84% 0.1392 263.21)", "oklch(95% 0.1392 263.21)"] },
+      "accent-key": { "role": "tertiary", "displayName": "Blue Accent Key", "tonalRamp": ["oklch(15% 0.1523 252.89)", "oklch(26% 0.1523 252.89)", "oklch(38% 0.1523 252.89)", "oklch(49% 0.1523 252.89)", "oklch(61% 0.1523 252.89)", "oklch(72% 0.1523 252.89)", "oklch(84% 0.1523 252.89)", "oklch(95% 0.1523 252.89)"] },
+      "cap-dark": { "role": "tertiary", "displayName": "Dark Keycap", "tonalRamp": ["oklch(15% 0.0065 31.07)", "oklch(26% 0.0065 31.07)", "oklch(38% 0.0065 31.07)", "oklch(49% 0.0065 31.07)", "oklch(61% 0.0065 31.07)", "oklch(72% 0.0065 31.07)", "oklch(84% 0.0065 31.07)", "oklch(95% 0.0065 31.07)"] },
+      "cap-light": { "role": "tertiary", "displayName": "Light Keycap", "tonalRamp": ["oklch(15% 0.0081 73.74)", "oklch(26% 0.0081 73.74)", "oklch(38% 0.0081 73.74)", "oklch(49% 0.0081 73.74)", "oklch(61% 0.0081 73.74)", "oklch(72% 0.0081 73.74)", "oklch(84% 0.0081 73.74)", "oklch(95% 0.0081 73.74)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Page Title", "purpose": "Guide and Photos titles; 1.75rem at 520px and below." },
+      "instruction": { "displayName": "Current Instruction", "purpose": "The one step heading in the build panel; 1.375rem at 960px and below." },
+      "instruction-body": { "displayName": "Instruction Sentence", "purpose": "One short sentence under the instruction, in soft neutral." },
+      "headline": { "displayName": "Section and Step Title", "purpose": "Guide section labels and step titles." },
+      "body": { "displayName": "Body", "purpose": "Default reading text." },
+      "action": { "displayName": "Primary Action", "purpose": "Primary button label." },
+      "navigation": { "displayName": "Navigation and Stepper", "purpose": "Route links and step names." },
+      "control": { "displayName": "Control", "purpose": "Tool buttons, segments, progress text." },
+      "counter": { "displayName": "Keys-Tested Counter", "purpose": "Tabular count in the test step." }
+    },
+    "shadows": [
+      { "name": "current-route-underline", "value": "inset 0 -2px 0 #0fbf3e", "purpose": "The only elevation-like treatment in chrome: a green underline on the current nav link." },
+      { "name": "swatch-ring", "value": "inset 0 0 0 1px rgba(255, 255, 255, 0.35)", "purpose": "Keycap swatch rim on the dark tray; becomes rgba(16, 20, 17, 0.4) when selected." },
+      { "name": "part-contact-shadow", "value": "soft blurred shadow under each part on the wood", "purpose": "Seats the rendered parts on the photographed desk." }
+    ],
+    "motion": [
+      { "name": "lid-open", "value": "photo lid pixels hinge up along the far edge (matrix3d)", "purpose": "The real lid lifts in the photo's own perspective." },
+      { "name": "part-lift", "value": "1s cubic-bezier(0.25, 0.7, 0.25, 1)", "purpose": "Each part arcs from the pile to its fixed spot on the wood." },
+      { "name": "box-fade-out", "value": "0.6s after a 1.4s delay", "purpose": "Unbox overlay fades once the box is empty." },
+      { "name": "progress-fill", "value": "transform 0.25s", "purpose": "Progress bar scaleX." },
+      { "name": "photo-hover", "value": "transform 0.25s", "purpose": "Photo tile image scales to 1.03." },
+      { "name": "reduced-motion", "value": "all transition and animation durations 0.01ms", "purpose": "prefers-reduced-motion gives instant states." }
+    ],
+    "breakpoints": [
+      { "name": "tablet-max", "value": "960px" },
+      { "name": "mobile-max", "value": "520px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single green action per step: 52px, 12px radius, no border. Hover lightens to Green Hover.",
+      "html": "<button class=\"ds-primary\">Open box</button>",
+      "css": ".ds-primary { min-height: 52px; padding: 0 20px; background: var(--g-500, #0fbf3e); color: var(--n-900, #101411); border: 0; border-radius: 12px; cursor: pointer; font: 700 1.0625rem 'Mona Sans', system-ui, sans-serif; } .ds-primary:hover { background: var(--g-300, #5fed83); } .ds-primary:active { transform: translateY(1px); } .ds-primary:focus-visible { outline: 2px solid var(--g-300, #5fed83); outline-offset: 2px; }"
+    },
+    {
+      "name": "Tool Button",
+      "kind": "button",
+      "refersTo": "button-tool",
+      "description": "Quiet raised control for Undo and Start over. Border brightens on hover; pressed state uses a green border.",
+      "html": "<button class=\"ds-tool\"><svg aria-hidden=\"true\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 10h11a6 6 0 0 1 0 12\"/><path d=\"m7 6-4 4 4 4\"/></svg>Undo</button>",
+      "css": ".ds-tool { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; background: var(--n-800, #232925); border: 1px solid var(--line, #2f3631); border-radius: 10px; color: var(--n-50, #f2f5f3); font: 600 0.875rem 'Mona Sans', system-ui, sans-serif; cursor: pointer; } .ds-tool:hover { border-color: var(--n-500, #909692); } .ds-tool[aria-pressed='true'] { border-color: var(--g-500, #0fbf3e); } .ds-tool:disabled { color: var(--n-500, #909692); cursor: default; }"
+    },
+    {
+      "name": "Route Navigation",
+      "kind": "navigation",
+      "refersTo": "nav-link",
+      "description": "Header links on the dark chrome; the current page carries a 2px green underline.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#/\" aria-current=\"page\">Build</a><a href=\"#/guide\">Guide</a><a href=\"#/photos\">Photos</a></nav>",
+      "css": ".ds-nav { display: flex; gap: 4px; } .ds-nav a { display: inline-flex; align-items: center; min-height: 40px; padding: 8px 12px; border-radius: 8px; color: var(--n-300, #b6bfb8); font: 600 0.9375rem 'Mona Sans', system-ui, sans-serif; text-decoration: none; } .ds-nav a:hover { color: var(--n-50, #f2f5f3); background: var(--n-800, #232925); } .ds-nav a[aria-current='page'] { color: var(--n-50, #f2f5f3); box-shadow: inset 0 -2px 0 var(--g-500, #0fbf3e); border-radius: 8px 8px 0 0; }"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "toggle",
+      "refersTo": "segment",
+      "description": "Assembled/Exploded and Dark/Light on the stage's lower edge. Selected segment is Paper on Chrome Ink.",
+      "html": "<div class=\"ds-segment\" role=\"group\" aria-label=\"Keycaps\"><button aria-pressed=\"true\"><span class=\"ds-swatch\" style=\"background:#6b6665\"></span>Dark</button><button aria-pressed=\"false\"><span class=\"ds-swatch\" style=\"background:#d8d4cf\"></span>Light</button></div>",
+      "css": ".ds-segment { display: inline-flex; padding: 3px; gap: 2px; background: rgba(16, 20, 17, 0.9); border-radius: 10px; } .ds-segment button { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px; background: transparent; border: 0; border-radius: 8px; color: var(--n-300, #b6bfb8); font: 600 0.875rem 'Mona Sans', system-ui, sans-serif; cursor: pointer; } .ds-segment button:hover { color: var(--n-50, #f2f5f3); } .ds-segment button[aria-pressed='true'] { background: var(--n-50, #f2f5f3); color: var(--n-900, #101411); } .ds-swatch { width: 12px; height: 12px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35); }"
+    },
+    {
+      "name": "Stage",
+      "kind": "surface",
+      "refersTo": "stage",
+      "description": "The light working surface that holds the box and the keyboard; 16px radius, clipped, ink text.",
+      "html": "<div class=\"ds-stage\"><p>Stage</p></div>",
+      "css": ".ds-stage { position: relative; min-height: 240px; border-radius: 16px; background: var(--n-100, #e4ebe6); color: var(--n-900, #101411); overflow: hidden; padding: 16px; font: 400 1rem/1.5 'Mona Sans', system-ui, sans-serif; }"
+    },
+    {
+      "name": "Assembly Stepper",
+      "kind": "stepper",
+      "refersTo": "step-mark-current",
+      "description": "Six circular numbered marks; done steps are filled green with a check, the current step is filled Paper, future steps are outlined Muted.",
+      "html": "<ol class=\"ds-stepper\"><li class=\"is-done\"><span class=\"mark\"><svg aria-hidden=\"true\" width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m5 12 4 4L19 6\"/></svg></span>Open your kit</li><li class=\"is-current\"><span class=\"mark\">2</span>Stabilizers</li><li><span class=\"mark\">3</span>Switches</li></ol>",
+      "css": ".ds-stepper { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; background: var(--n-900, #101411); padding: 12px; } .ds-stepper li { display: flex; align-items: center; gap: 12px; min-height: 32px; color: var(--n-500, #909692); font: 600 0.9375rem 'Mona Sans', system-ui, sans-serif; } .ds-stepper .mark { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; border: 1.5px solid var(--n-500, #909692); font-size: 0.75rem; font-variant-numeric: tabular-nums; flex: none; } .ds-stepper .is-done { color: var(--n-300, #b6bfb8); } .ds-stepper .is-done .mark { background: var(--g-500, #0fbf3e); border-color: var(--g-500, #0fbf3e); color: var(--n-900, #101411); } .ds-stepper .is-current { color: var(--n-50, #f2f5f3); } .ds-stepper .is-current .mark { background: var(--n-50, #f2f5f3); border-color: var(--n-50, #f2f5f3); color: var(--n-900, #101411); }"
+    },
+    {
+      "name": "Progress",
+      "kind": "progress",
+      "refersTo": "progress-bar",
+      "description": "6px track and green fill with a tabular count line, shown only when a step has countable parts.",
+      "html": "<div class=\"ds-progress\"><div class=\"bar\"><span style=\"transform:scaleX(.5)\"></span></div><span class=\"text\">4 / 8 switches</span></div>",
+      "css": ".ds-progress { display: grid; gap: 8px; } .ds-progress .bar { height: 6px; border-radius: 3px; background: var(--n-800, #232925); overflow: hidden; } .ds-progress .bar span { display: block; height: 100%; width: 100%; background: var(--g-500, #0fbf3e); transform-origin: left; transition: transform 0.25s; } .ds-progress .text { color: var(--n-300, #b6bfb8); font: 400 0.875rem 'Mona Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Blind Box",
+      "kind": "illustration",
+      "refersTo": "stage",
+      "description": "The sealed cardboard box drawn as three flat oblique planes with taped seam and lid print, on the bench slab. Cardboard colors are product material and stay on the stage.",
+      "html": "<svg class=\"ds-box\" viewBox=\"0 0 360 220\" role=\"img\" aria-label=\"Sealed blind box\"><rect x=\"10\" y=\"170\" width=\"340\" height=\"40\" rx=\"18\" fill=\"#d3dcd6\"/><polygon points=\"60,90 240,90 240,170 60,170\" fill=\"#b98a58\"/><polygon points=\"240,90 290,70 290,150 240,170\" fill=\"#a37646\"/><polygon points=\"60,90 240,90 290,70 110,70\" fill=\"#c9a06e\"/><polygon points=\"60,98 240,98 240,106 60,106\" fill=\"#d9c9a8\" opacity=\".9\"/></svg>",
+      "css": ".ds-box { width: 100%; max-width: 360px; display: block; background: var(--n-100, #e4ebe6); border-radius: 16px; }"
+    },
+    {
+      "name": "Photo Tile",
+      "kind": "card",
+      "refersTo": "photo-tile",
+      "description": "Borderless 3:2 image on Raised Ink; the image scales 1.03 on hover.",
+      "html": "<button class=\"ds-tile\"><svg viewBox=\"0 0 3 2\" width=\"220\" height=\"147\" aria-hidden=\"true\"><rect width=\"3\" height=\"2\" fill=\"#909692\"/></svg></button>",
+      "css": ".ds-tile { display: block; width: 220px; padding: 0; border: 0; border-radius: 12px; overflow: hidden; background: var(--n-800, #232925); cursor: pointer; } .ds-tile svg { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; transition: transform 0.25s; } .ds-tile:hover svg { transform: scale(1.03); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Workbench in the Dark",
+    "overview": "A near-black GitHub chrome holds one large, pale stage. The keyboard is the page: the dark shell recedes, the light stage makes the hardware read like an object on a bench, and GitHub Green appears only where something is done or about to be done. Mona Sans carries all text. The interface is flat; there is no UI shadow.\n\nThe world is the kit itself: a sealed cardboard blind box, parts rising out to bench slots, then a photo-faithful Omnitype Bauer Lite with a red bottom housing, blue plate, clear top housing, Dark or Light keycaps and blue accent keys. Hardware and cardboard colors are product material and live only on the stage.",
+    "keyCharacteristics": [
+      "Dark chrome, light stage: two grounds and no mid-tones between them.",
+      "GitHub Green #0FBF3E on the primary action, progress, completed steps and the current-nav underline only.",
+      "One family, Mona Sans, with hierarchy from size and weight alone.",
+      "Flat surfaces separated by 1px lines and tonal steps; 8–16px radii.",
+      "One instruction and one primary action at a time."
+    ],
+    "rules": [
+      { "name": "The Green Is Earned Rule", "body": "Green means act, progress, or done. Never a text-block background, never decoration, never a status for anything unverified. Completion pairs a check with the green mark.", "section": "colors" },
+      { "name": "The Hardware Stays on the Stage Rule", "body": "Red, blue, cardboard and keycap colors never appear in the header, panel, buttons or pages. The shell has exactly one chromatic color.", "section": "colors" },
+      { "name": "The No Purple, No Blue UI Rule", "body": "GitHub's purple and blue brand colors are not used for interface. Blue exists only as the product's accent keys and plate.", "section": "colors" },
+      { "name": "The One Family Rule", "body": "Hierarchy is size and weight in Mona Sans. No second face, no monospace, no all-caps UI labels.", "section": "typography" },
+      { "name": "The Flat Shell Rule", "body": "No shadows, glows, glass or gradients on buttons, panels or the header. Depth is the object's job.", "section": "elevation" }
+    ],
+    "dos": [
+      "**Do** keep the shell to the green-tinted neutral scale plus GitHub Green on the primary action.",
+      "**Do** keep the stage light and the chrome dark.",
+      "**Do** use Green Deep (#08872B) for focus and outlines on the stage and Green Hover (#5FED83) on the dark shell.",
+      "**Do** show one instruction and one primary action, with the primary button in the first mobile screen.",
+      "**Do** keep Dark and Light as the only keycap options.",
+      "**Do** keep controls at least 40px tall and honor prefers-reduced-motion."
+    ],
+    "donts": [
+      "**Don't** use purple or blue brand colors for interface, or tint the shell with hardware colors.",
+      "**Don't** add shadows, glows, glassmorphism or gradient fills to chrome.",
+      "**Don't** add kickers, eyebrows, slogans, repeated warnings or all-caps UI labels.",
+      "**Don't** introduce a second typeface or a display face.",
+      "**Don't** add video links beyond the single click-to-play embed in the guide.",
+      "**Don't** invent colorways or recolor the supplied photographs.",
+      "**Don't** replace SVG icons with glyph characters."
+    ]
+  }
+}
