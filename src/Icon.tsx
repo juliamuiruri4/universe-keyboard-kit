@@ -8,6 +8,7 @@ const paths = {
   check: <path d="m5 12 4 4L19 6" />,
   prev: <path d="m15 5-7 7 7 7" />,
   next: <path d="m9 5 7 7-7 7" />,
+  keyboard: <><rect x="2" y="5" width="20" height="14" rx="3" /><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 12.5h.01M10 12.5h.01M14 12.5h.01M18 12.5h.01M7 16h10" /></>,
 };
 
 export type IconName = keyof typeof paths;
