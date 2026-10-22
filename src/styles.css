@@ -391,7 +391,10 @@ img { display: block; max-width: 100%; }
   .brand span { display: none; }
   .stage { height: calc(83.4vw + 52px); min-height: 280px; }
   .panel { gap: 10px; }
-  .u-label { display: none; }
+  .u-label { font-size: 10px; padding: 1px 5px; top: calc(100% + 2px); }
+  .u-label[data-h="start"] { left: 6px; transform: none; }
+  .u-label[data-h="end"] { left: auto; right: 6px; transform: none; }
+  .u-label[data-v="above"] { top: auto; bottom: calc(100% + 2px); }
   .segment button { padding: 0 8px; min-height: 34px; gap: 6px; font-size: 0.8125rem; }
   .stage-tools { left: 8px; right: 8px; flex-wrap: nowrap; gap: 4px; }
   .page { padding-top: 20px; }
