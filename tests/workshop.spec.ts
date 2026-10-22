@@ -404,6 +404,35 @@ test('navigation reaches every page', async ({ page }) => {
   await expect(panel(page).getByRole('heading', { name: 'Open your kit' })).toBeVisible({ timeout: 20_000 });
 });
 
+test('header links back to the repo and fits the viewport', async ({ page }) => {
+  await page.goto('/');
+  const link = page.getByRole('link', { name: 'View source on GitHub' });
+  await expect(link).toHaveAttribute('href', 'https://github.com/juliamuiruri4/universe-keyboard-kit');
+  await expect(link).toHaveAttribute('target', '_blank');
+  await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  const fit = await page.evaluate(() => {
+    const h = document.querySelector('header.top')!;
+    const l = document.querySelector('.repo-link')!.getBoundingClientRect();
+    return { overflow: h.scrollWidth > h.clientWidth, right: l.right, width: window.innerWidth, headH: h.getBoundingClientRect().height, linkH: l.height };
+  });
+  expect(fit.overflow).toBe(false);
+  expect(fit.right).toBeLessThanOrEqual(fit.width);
+  expect(fit.headH).toBeLessThanOrEqual(56);
+  expect(fit.linkH).toBeGreaterThanOrEqual(40);
+});
+
+test('header fits a 360px viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 740 });
+  await page.goto('/');
+  const m = await page.evaluate(() => {
+    const h = document.querySelector('header.top')!;
+    return { sw: h.scrollWidth, cw: h.clientWidth, hh: h.getBoundingClientRect().height, doc: document.documentElement.scrollWidth };
+  });
+  expect(m.sw).toBeLessThanOrEqual(m.cw);
+  expect(m.doc).toBeLessThanOrEqual(360);
+  expect(m.hh).toBeLessThanOrEqual(56);
+});
+
 test('extracted parts show readable labels inside the scene on narrow screens', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 780 });
   await readyBoard(page);

@@ -171,14 +171,19 @@ export default function App() {
     <>
       <header className="top">
         <a className="brand" href="#/" aria-label="Universe keyboard, build">
-          <GitHubMark size={26} />
+          <Icon name="keyboard" size={26} />
           <span>Universe '26 keyboard</span>
         </a>
+        <div className="top-end">
         <nav aria-label="Sections">
           {([['build', '#/', 'Build'], ['guide', '#/guide', 'Guide'], ['photos', '#/photos', 'Photos']] as const).map(([id, href, label]) => (
             <a key={id} href={href} aria-current={route === id ? 'page' : undefined}>{label}</a>
           ))}
         </nav>
+        <a className="repo-link" href="https://github.com/juliamuiruri4/universe-keyboard-kit" target="_blank" rel="noopener noreferrer" aria-label="View source on GitHub">
+          <GitHubMark size={20} />
+        </a>
+        </div>
       </header>
 
       <main>
