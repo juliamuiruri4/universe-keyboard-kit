@@ -431,7 +431,8 @@ test('header fits a 360px viewport', async ({ page }) => {
   expect(m.sw).toBeLessThanOrEqual(m.cw);
   expect(m.doc).toBeLessThanOrEqual(360);
   expect(m.hh).toBeLessThanOrEqual(56);
-=======
+});
+
 test('extracted parts show readable labels inside the scene on narrow screens', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 780 });
   await readyBoard(page);
@@ -461,5 +462,4 @@ test('extracted parts show readable labels inside the scene on narrow screens', 
       expect(overlap, `labels ${i} and ${j} overlap`).toBe(false);
     }
   }
->>>>>>> origin/main
 });
