@@ -263,6 +263,16 @@ test('software keyboard input types into the preview and maps keys without dupli
   await compose(['x', 'y']);
   await expect(tester).toContainText(`10 / ${KEY_COUNT}`);
 
+  // A simulated-key tap during composition is kept when the composition ends.
+  await preview.evaluate((el: HTMLTextAreaElement) => {
+    el.dispatchEvent(new CompositionEvent('compositionstart', { bubbles: true }));
+    Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')!.set!.call(el, el.value + 'm');
+    el.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertCompositionText', isComposing: true }));
+  });
+  await page.getByRole('button', { name: 'Test Q', exact: true }).click();
+  await preview.evaluate((el) => el.dispatchEvent(new CompositionEvent('compositionend', { bubbles: true })));
+  expect(await preview.inputValue()).toMatch(/mq$/);
+
   await tester.getByRole('button', { name: 'Clear' }).click();
   await expect(preview).toHaveValue('');
   await expect(tester).toContainText(`0 / ${KEY_COUNT}`);

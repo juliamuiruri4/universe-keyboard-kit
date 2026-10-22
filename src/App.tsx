@@ -111,7 +111,10 @@ export default function App() {
       stickyRef.current = nextSticky;
       setSticky(nextSticky);
     }
-    setText((before) => applyKeyToText(before, key, mods));
+    const nextText = applyKeyToText(textRef.current, key, mods);
+    textRef.current = nextText;
+    rawRef.current = nextText;
+    setText(nextText);
   }, [markKey]);
 
   // Software keyboards report text, not key codes, so the edit itself is the source of truth.
