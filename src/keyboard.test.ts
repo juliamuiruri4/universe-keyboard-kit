@@ -134,12 +134,16 @@ describe('gallery', () => {
 });
 
 describe('component visibility at transition boundaries', () => {
-  const vis = (s: BuildState, all = false) => partVisibility(s, all);
+  const vis = (s: BuildState, view: 'build' | 'exploded' = 'build') => {
+    const v = partVisibility(s, view, { keys: KEY_COUNT, stabs: STABILIZER_COUNT, screws: SCREW_COUNT });
+    return { damper: v.dampener, plate: v.plate, bottom: v.tray, top: v.frame };
+  };
   const none = { damper: false, plate: false, bottom: false, top: false };
   const afterStabs = run([{ type: 'open' }, { type: 'fill' }, { type: 'fill' }]);
 
   it('does not preview the dampener after stabilizers finish', () => {
     expect(vis(afterStabs)).toEqual(none);
+    expect(vis(afterStabs, 'exploded')).toEqual(none);
   });
   it('shows only the dampener after it is added, not the plate', () => {
     expect(vis(run([{ type: 'dampener' }], afterStabs))).toEqual({ ...none, damper: true });
@@ -148,6 +152,7 @@ describe('component visibility at transition boundaries', () => {
     const seated = run([{ type: 'dampener' }, { type: 'plate' }, { type: 'fill' }], afterStabs);
     expect(currentStep(seated)).toBe(3);
     expect(vis(seated)).toEqual({ ...none, damper: true, plate: true });
+    expect(vis(seated, 'exploded')).toEqual({ ...none, damper: true, plate: true });
   });
   it('introduces bottom and top only via their add actions', () => {
     const seated = run([{ type: 'dampener' }, { type: 'plate' }, { type: 'fill' }], afterStabs);
@@ -155,8 +160,10 @@ describe('component visibility at transition boundaries', () => {
     expect(vis(bottom)).toEqual({ damper: true, plate: true, bottom: true, top: false });
     expect(vis(run([{ type: 'top' }], bottom)).top).toBe(true);
   });
-  it('still shows everything in the exploded view and in finished builds', () => {
-    expect(vis(initialState, true)).toEqual({ damper: true, plate: true, bottom: true, top: true });
-    expect(vis(finished())).toEqual({ damper: true, plate: true, bottom: true, top: true });
+  it('exploded view of an empty build is empty; finished builds show everything', () => {
+    expect(vis(initialState, 'exploded')).toEqual(none);
+    const all = { damper: true, plate: true, bottom: true, top: true };
+    expect(vis(finished())).toEqual(all);
+    expect(vis(finished(), 'exploded')).toEqual(all);
   });
 });
