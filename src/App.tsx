@@ -5,7 +5,7 @@ import Icon, { GitHubMark } from './Icon';
 import KeyboardBoard, { type BoardHandle } from './KeyboardBoard';
 import Unbox from './Unbox';
 import { keyClick } from './sound';
-import { applyKeyToText, isShiftKey, type Mods } from './typing';
+import { applyKeyToText, diffText, isShiftKey, keyIndexForEdit, MAX_TEXT, type Mods } from './typing';
 import {
   buildReducer, currentStep, initialState, KEY_COUNT, keycapOptions, keys, primaryAction, progressCount,
   restoreBuild, secondaryAction, steps, STORAGE_KEY,
@@ -49,6 +49,9 @@ export default function App() {
   const [sticky, setSticky] = useState<Mods>({ shift: false, caps: false });
   const stickyRef = useRef(sticky);
   const typedRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const textRef = useRef(text);
+  textRef.current = text;
   const boardRef = useRef<BoardHandle>(null);
   const saveBlocked = useRef(restored.blocked);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -86,11 +89,15 @@ export default function App() {
     setNotice('');
   }, [build]);
 
-  const testKey = useCallback((index: number, physical?: Mods) => {
-    const key = keys[index];
+  const markKey = useCallback((index: number) => {
     if (soundRef.current) keyClick();
     setTested((before) => (before.has(index) ? before : new Set(before).add(index)));
-    setLastKey(key.name);
+    setLastKey(keys[index].name);
+  }, []);
+
+  const testKey = useCallback((index: number, physical?: Mods) => {
+    const key = keys[index];
+    markKey(index);
     const held = stickyRef.current;
     const mods = physical ? { shift: physical.shift || held.shift, caps: physical.caps || held.caps } : held;
     let nextSticky = held;
@@ -102,7 +109,20 @@ export default function App() {
       setSticky(nextSticky);
     }
     setText((before) => applyKeyToText(before, key, mods));
-  }, []);
+  }, [markKey]);
+
+  // Software keyboards report text, not key codes, so the edit itself is the source of truth.
+  const onSoftwareInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const next = e.target.value.length > MAX_TEXT ? e.target.value.slice(-MAX_TEXT) : e.target.value;
+    const index = keyIndexForEdit(diffText(textRef.current, next));
+    textRef.current = next;
+    setText(next);
+    if (index >= 0) {
+      markKey(index);
+      boardRef.current?.press(index, true);
+      window.setTimeout(() => boardRef.current?.press(index, false), 120);
+    }
+  };
 
   const clearTest = () => {
     setTested(new Set());
@@ -247,14 +267,23 @@ export default function App() {
                   <div
                     ref={typedRef}
                     className="typed"
-                    role="textbox"
-                    aria-readonly="true"
-                    aria-multiline="true"
-                    aria-label="Typing preview"
-                    tabIndex={0}
                     data-empty={text === '' || undefined}
+                    onClick={() => inputRef.current?.focus()}
                   >
-                    {text}<span className="caret" aria-hidden="true" />
+                    <span aria-hidden="true">{text}</span><span className="caret" aria-hidden="true" />
+                    <textarea
+                      ref={inputRef}
+                      className="typed-input"
+                      aria-label="Typing preview"
+                      value={text}
+                      onChange={onSoftwareInput}
+                      onFocus={(e) => e.target.setSelectionRange(e.target.value.length, e.target.value.length)}
+                      rows={1}
+                      enterKeyHint="enter"
+                      autoCapitalize="off"
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
                   </div>
                   <div className="tester-meta">
                     <strong>{tested.size} / {KEY_COUNT}</strong>

@@ -143,8 +143,7 @@ test('types into the preview from the physical keyboard and by click', async ({ 
   await readyBoard(page);
   await finish(page);
   const preview = panel(page).getByRole('textbox', { name: 'Typing preview' });
-  const typed = () => preview.evaluate((el) => el.textContent);
-  await expect(preview).toHaveAttribute('aria-readonly', 'true');
+  const typed = () => preview.inputValue();
   await expect(panel(page).locator('.tester [aria-live], .tester [role="status"]')).toHaveCount(0);
   expect(await typed()).toBe('');
 
@@ -183,6 +182,53 @@ test('types into the preview from the physical keyboard and by click', async ({ 
   await panel(page).locator('.tester').getByRole('button', { name: 'Clear' }).click();
   expect(await typed()).toBe('');
   await expect(panel(page).locator('.tester')).toContainText(`0 / ${KEY_COUNT}`);
+});
+
+test('software keyboard input types into the preview and maps keys without duplicates', async ({ page }) => {
+  await readyBoard(page);
+  await finish(page);
+  const tester = panel(page).locator('.tester');
+  const preview = tester.getByRole('textbox', { name: 'Typing preview' });
+  await tester.locator('.typed').click();
+  await expect(preview).toBeFocused();
+  expect(await preview.evaluate((el) => getComputedStyle(el).fontSize)).toBe('16px');
+
+  // Software keyboards deliver text without key codes, so insertText fires only input events.
+  await page.keyboard.insertText('h');
+  await page.keyboard.insertText('i');
+  await expect(preview).toHaveValue('hi');
+  await expect(tester).toContainText(`2 / ${KEY_COUNT}`);
+  await page.keyboard.insertText(' ');
+  await page.keyboard.insertText('\n');
+  await page.keyboard.insertText('!');
+  await expect(preview).toHaveValue('hi \n!');
+  await expect(tester).toContainText(`5 / ${KEY_COUNT}`);
+
+  // Unsupported characters reach the text but count no key; autocorrect-style replacements count none either.
+  await page.keyboard.insertText('é');
+  await expect(preview).toHaveValue('hi \n!é');
+  await expect(tester).toContainText(`5 / ${KEY_COUNT}`);
+  await preview.fill('hi \n!hello');
+  await expect(preview).toHaveValue('hi \n!hello');
+  await expect(tester).toContainText(`5 / ${KEY_COUNT}`);
+
+  await preview.fill('hi \n!hell');
+  await expect(tester).toContainText(`6 / ${KEY_COUNT}`);
+  await expect(tester.locator('.tester-last')).toHaveText('GitHub icon');
+
+  // Simulated keys keep working and stay in sync with the field.
+  await page.getByRole('button', { name: 'Test Q', exact: true }).click();
+  await expect(preview).toHaveValue('hi \n!hellq');
+  await preview.press('Backspace');
+  await expect(preview).toHaveValue('hi \n!hell');
+
+  // A physical keypress is handled once, not also as input.
+  await page.keyboard.press('a');
+  await expect(preview).toHaveValue('hi \n!hella');
+
+  await tester.getByRole('button', { name: 'Clear' }).click();
+  await expect(preview).toHaveValue('');
+  await expect(tester).toContainText(`0 / ${KEY_COUNT}`);
 });
 
 test('every key has a cap and a test spot, and the two blockers are labelled hardware', async ({ page }) => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { keys, unboxParts } from './keyboard';
-import { applyKeyToText, isShiftKey, MAX_TEXT, TAB_WIDTH } from './typing';
+import { applyKeyToText, diffText, isShiftKey, keyIndexForChar, keyIndexForEdit, MAX_TEXT, TAB_WIDTH } from './typing';
 import {
   applyHomography, BOX_HULL, boxRect, homography, LID_OPEN_DEG, lidMatrix3d, lidQuad, lidShowsUnderside, partSlots, pointInPolygon,
   polygonsOverlap, QUAD, quadPoints, rectCorners, SCENE_H, SCENE_W, slotRect,
@@ -129,5 +129,34 @@ describe('unbox lid', () => {
   it('shows the printed face first and the plain underside once past edge-on', () => {
     expect(lidShowsUnderside(0)).toBe(false);
     expect(lidShowsUnderside(LID_OPEN_DEG)).toBe(true);
+  });
+});
+
+describe('software keyboard input', () => {
+  it('finds the smallest edit', () => {
+    expect(diffText('hi', 'hit')).toEqual({ removed: '', added: 't' });
+    expect(diffText('hit', 'hi')).toEqual({ removed: 't', added: '' });
+    expect(diffText('teh', 'the')).toEqual({ removed: 'eh', added: 'he' });
+    expect(diffText('a', 'a')).toEqual({ removed: '', added: '' });
+  });
+
+  it('maps only characters the layout prints', () => {
+    const code = (c: string) => keys[keyIndexForChar(c)]?.code;
+    expect(code('h')).toBe('KeyH');
+    expect(code('H')).toBe('KeyH');
+    expect(code('!')).toBe('Digit1');
+    expect(code(' ')).toBe('Space');
+    expect(code('\n')).toBe('Enter');
+    expect(keyIndexForChar('é')).toBe(-1);
+    expect(keyIndexForChar('😀')).toBe(-1);
+  });
+
+  it('counts a key only for a single-character insert or delete', () => {
+    expect(keys[keyIndexForEdit({ removed: '', added: 'q' })].code).toBe('KeyQ');
+    expect(keys[keyIndexForEdit({ removed: 'q', added: '' })].code).toBe('Backspace');
+    expect(keyIndexForEdit({ removed: 'teh', added: 'the' })).toBe(-1);
+    expect(keyIndexForEdit({ removed: '', added: 'hello' })).toBe(-1);
+    expect(keyIndexForEdit({ removed: 'a', added: 'b' })).toBe(-1);
+    expect(keyIndexForEdit({ removed: '', added: '' })).toBe(-1);
   });
 });
