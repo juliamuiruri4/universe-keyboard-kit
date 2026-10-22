@@ -214,7 +214,7 @@ export default function Unbox({ build, onAction }: Props) {
                 aria-hidden={out ? undefined : true}
               >
                 <img src={slot.src} alt="" draggable={false} />
-                <span className="u-label" aria-hidden="true">{name}</span>
+                <span className="u-label" data-h={slot.x < 300 ? 'start' : slot.x > 1250 ? 'end' : undefined} data-v={slot.id === 'dampener' || slot.y + slot.w / slot.ratio / 2 > 1180 ? 'above' : undefined} aria-hidden="true">{name}</span>
               </div>
             </div>
           );

@@ -403,3 +403,34 @@ test('navigation reaches every page', async ({ page }) => {
   // The WebGL board is rebuilt on return; software rendering can stall the page for several seconds.
   await expect(panel(page).getByRole('heading', { name: 'Open your kit' })).toBeVisible({ timeout: 20_000 });
 });
+
+test('extracted parts show readable labels inside the scene on narrow screens', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 780 });
+  await readyBoard(page);
+  await panel(page).getByRole('button', { name: 'Open box' }).click();
+  for (let n = 0; n < 7; n += 1) await panel(page).locator('.primary').click();
+  await expect(panel(page).locator('.progress-text')).toHaveText('7 / 8 parts');
+  const labels = page.locator('.u-part.is-out .u-label');
+  await expect(labels).toHaveCount(7);
+  const scene = (await page.locator('.u-scene').boundingBox())!;
+  const boxes: { x: number; y: number; width: number; height: number }[] = [];
+  for (let i = 0; i < 7; i += 1) {
+    const label = labels.nth(i);
+    await expect(label).toBeVisible();
+    const b = (await label.boundingBox())!;
+    boxes.push(b);
+    expect(b.x, `label ${i} left`).toBeGreaterThanOrEqual(scene.x - 0.5);
+    expect(b.x + b.width, `label ${i} right`).toBeLessThanOrEqual(scene.x + scene.width + 0.5);
+    expect(b.y, `label ${i} top`).toBeGreaterThanOrEqual(scene.y - 0.5);
+    expect(b.y + b.height, `label ${i} bottom`).toBeLessThanOrEqual(scene.y + scene.height + 0.5);
+    expect(await label.evaluate((e) => parseFloat(getComputedStyle(e).fontSize))).toBeGreaterThanOrEqual(9);
+  }
+  for (let i = 0; i < boxes.length; i += 1) {
+    for (let j = i + 1; j < boxes.length; j += 1) {
+      const a = boxes[i];
+      const c = boxes[j];
+      const overlap = a.x < c.x + c.width && c.x < a.x + a.width && a.y < c.y + c.height && c.y < a.y + a.height;
+      expect(overlap, `labels ${i} and ${j} overlap`).toBe(false);
+    }
+  }
+});
