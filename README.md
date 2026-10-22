@@ -14,6 +14,7 @@ Open `http://127.0.0.1:4173`.
 ```sh
 npm test
 npm run build
+npx playwright install chromium
 npm run test:e2e
 ```
 
