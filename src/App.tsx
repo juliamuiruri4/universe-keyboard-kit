@@ -5,7 +5,7 @@ import Icon, { GitHubMark } from './Icon';
 import KeyboardBoard, { type BoardHandle } from './KeyboardBoard';
 import Unbox from './Unbox';
 import { keyClick } from './sound';
-import { applyKeyToText, isShiftKey, type Mods } from './typing';
+import { applyKeyToText, diffText, isShiftKey, keyIndexForEdit, clampText, type Mods } from './typing';
 import {
   buildReducer, currentStep, initialState, KEY_COUNT, keycapOptions, keys, primaryAction, progressCount,
   restoreBuild, secondaryAction, steps, STORAGE_KEY,
@@ -49,6 +49,12 @@ export default function App() {
   const [sticky, setSticky] = useState<Mods>({ shift: false, caps: false });
   const stickyRef = useRef(sticky);
   const typedRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const composingRef = useRef(false);
+  const rawRef = useRef('');
+  const compositionStartRef = useRef('');
+  const textRef = useRef(text);
+  textRef.current = text;
   const boardRef = useRef<BoardHandle>(null);
   const saveBlocked = useRef(restored.blocked);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -86,11 +92,15 @@ export default function App() {
     setNotice('');
   }, [build]);
 
-  const testKey = useCallback((index: number, physical?: Mods) => {
-    const key = keys[index];
+  const markKey = useCallback((index: number) => {
     if (soundRef.current) keyClick();
     setTested((before) => (before.has(index) ? before : new Set(before).add(index)));
-    setLastKey(key.name);
+    setLastKey(keys[index].name);
+  }, []);
+
+  const testKey = useCallback((index: number, physical?: Mods) => {
+    const key = keys[index];
+    markKey(index);
     const held = stickyRef.current;
     const mods = physical ? { shift: physical.shift || held.shift, caps: physical.caps || held.caps } : held;
     let nextSticky = held;
@@ -101,8 +111,49 @@ export default function App() {
       stickyRef.current = nextSticky;
       setSticky(nextSticky);
     }
-    setText((before) => applyKeyToText(before, key, mods));
-  }, []);
+    const nextText = applyKeyToText(textRef.current, key, mods);
+    textRef.current = nextText;
+    rawRef.current = nextText;
+    setText(nextText);
+  }, [markKey]);
+
+  // Software keyboards report text, not key codes, so the edit itself is the source of truth.
+  const creditEdit = (before: string, after: string) => {
+    const index = keyIndexForEdit(diffText(before, after));
+    if (index < 0) return;
+    markKey(index);
+    boardRef.current?.press(index, true);
+    window.setTimeout(() => boardRef.current?.press(index, false), 120);
+  };
+  const onSoftwareInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const raw = e.target.value;
+    rawRef.current = raw;
+    const before = textRef.current;
+    const next = composingRef.current ? raw : clampText(raw);
+    textRef.current = next;
+    setText(next);
+    const type = (e.nativeEvent as InputEvent).inputType;
+    if (!composingRef.current && (type === 'insertText' || type === 'insertLineBreak' || type === 'deleteContentBackward')) {
+      creditEdit(before, raw);
+    }
+  };
+  const onCompositionStart = () => {
+    composingRef.current = true;
+    compositionStartRef.current = textRef.current;
+    rawRef.current = textRef.current;
+  };
+  const onCompositionEnd = () => {
+    composingRef.current = false;
+    creditEdit(compositionStartRef.current, rawRef.current);
+    const clamped = clampText(rawRef.current);
+    textRef.current = clamped;
+    setText(clamped);
+  };
+  const keepCaretAtEnd = (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
+    const el = e.currentTarget;
+    const end = el.value.length;
+    if (el.selectionStart !== end || el.selectionEnd !== end) el.setSelectionRange(end, end);
+  };
 
   const clearTest = () => {
     setTested(new Set());
@@ -121,6 +172,7 @@ export default function App() {
     if (route !== 'build' || stage !== 6) return;
     const index = (code: string) => keys.findIndex((k) => k.code === code);
     const down = (e: KeyboardEvent) => {
+      if (e.isComposing || e.keyCode === 229) return;
       if (noisy.includes(e.key) || e.ctrlKey || e.metaKey || e.altKey) return;
       const i = index(e.code);
       if (i < 0) return;
@@ -252,14 +304,26 @@ export default function App() {
                   <div
                     ref={typedRef}
                     className="typed"
-                    role="textbox"
-                    aria-readonly="true"
-                    aria-multiline="true"
-                    aria-label="Typing preview"
-                    tabIndex={0}
                     data-empty={text === '' || undefined}
+                    onClick={() => inputRef.current?.focus()}
                   >
-                    {text}<span className="caret" aria-hidden="true" />
+                    <span aria-hidden="true">{text}</span><span className="caret" aria-hidden="true" />
+                    <textarea
+                      ref={inputRef}
+                      className="typed-input"
+                      aria-label="Typing preview"
+                      value={text}
+                      onChange={onSoftwareInput}
+                      onFocus={keepCaretAtEnd}
+                      onSelect={keepCaretAtEnd}
+                      onCompositionStart={onCompositionStart}
+                      onCompositionEnd={onCompositionEnd}
+                      rows={1}
+                      enterKeyHint="enter"
+                      autoCapitalize="off"
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
                   </div>
                   <div className="tester-meta">
                     <strong>{tested.size} / {KEY_COUNT}</strong>

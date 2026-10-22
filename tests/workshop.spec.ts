@@ -143,8 +143,7 @@ test('types into the preview from the physical keyboard and by click', async ({ 
   await readyBoard(page);
   await finish(page);
   const preview = panel(page).getByRole('textbox', { name: 'Typing preview' });
-  const typed = () => preview.evaluate((el) => el.textContent);
-  await expect(preview).toHaveAttribute('aria-readonly', 'true');
+  const typed = () => preview.inputValue();
   await expect(panel(page).locator('.tester [aria-live], .tester [role="status"]')).toHaveCount(0);
   expect(await typed()).toBe('');
 
@@ -183,6 +182,100 @@ test('types into the preview from the physical keyboard and by click', async ({ 
   await panel(page).locator('.tester').getByRole('button', { name: 'Clear' }).click();
   expect(await typed()).toBe('');
   await expect(panel(page).locator('.tester')).toContainText(`0 / ${KEY_COUNT}`);
+});
+
+test('software keyboard input types into the preview and maps keys without duplicates', async ({ page }) => {
+  await readyBoard(page);
+  await finish(page);
+  const tester = panel(page).locator('.tester');
+  const preview = tester.getByRole('textbox', { name: 'Typing preview' });
+  await tester.locator('.typed').click();
+  await expect(preview).toBeFocused();
+  expect(await preview.evaluate((el) => getComputedStyle(el).fontSize)).toBe('16px');
+
+  // Software keyboards deliver text without key codes, so insertText fires only input events.
+  await page.keyboard.insertText('h');
+  await page.keyboard.insertText('i');
+  await expect(preview).toHaveValue('hi');
+  await expect(tester).toContainText(`2 / ${KEY_COUNT}`);
+  await page.keyboard.insertText(' ');
+  await page.keyboard.insertText('\n');
+  await page.keyboard.insertText('!');
+  await expect(preview).toHaveValue('hi \n!');
+  await expect(tester).toContainText(`5 / ${KEY_COUNT}`);
+
+  // Unsupported characters reach the text but count no key; autocorrect-style replacements count none either.
+  await page.keyboard.insertText('é');
+  await expect(preview).toHaveValue('hi \n!é');
+  await expect(tester).toContainText(`5 / ${KEY_COUNT}`);
+  await preview.fill('hi \n!hello');
+  await expect(preview).toHaveValue('hi \n!hello');
+  await expect(tester).toContainText(`5 / ${KEY_COUNT}`);
+
+  await preview.press('Backspace');
+  await preview.press('Backspace');
+  await preview.press('Backspace');
+  await expect(preview).toHaveValue('hi \n!he');
+  await expect(tester).toContainText(`6 / ${KEY_COUNT}`);
+  await expect(tester.locator('.tester-last')).toHaveText('GitHub icon');
+
+  // Simulated keys keep working and stay in sync with the field.
+  await page.getByRole('button', { name: 'Test Q', exact: true }).click();
+  await expect(preview).toHaveValue('hi \n!heq');
+  await preview.press('Backspace');
+  await expect(preview).toHaveValue('hi \n!he');
+
+  // Composition is credited once, when committed; pasted single characters are not credited.
+  await preview.evaluate((el: HTMLTextAreaElement) => {
+    const set = (v: string) => {
+      Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')!.set!.call(el, v);
+      el.setSelectionRange(v.length, v.length);
+    };
+    el.dispatchEvent(new CompositionEvent('compositionstart', { bubbles: true }));
+    set(el.value + 'z');
+    el.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertCompositionText', isComposing: true }));
+    el.dispatchEvent(new CompositionEvent('compositionend', { bubbles: true }));
+    set(el.value + 'w');
+    el.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertFromPaste' }));
+  });
+  await expect(preview).toHaveValue('hi \n!hezw');
+  await expect(tester).toContainText(`8 / ${KEY_COUNT}`);
+  await preview.press('Backspace');
+  await preview.press('Backspace');
+
+  // A physical keypress is handled once, not also as input.
+  await page.keyboard.press('a');
+  await expect(preview).toHaveValue('hi \n!hea');
+
+  // A single character committed at the text limit still earns its key.
+  await preview.fill('a'.repeat(2000));
+  const compose = (chars: string[]) => preview.evaluate(async (el: HTMLTextAreaElement, steps: string[]) => {
+    const base = el.value;
+    const setValue = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')!.set!;
+    el.dispatchEvent(new CompositionEvent('compositionstart', { bubbles: true }));
+    for (const c of steps) {
+      setValue.call(el, base + c);
+      el.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertCompositionText', isComposing: true }));
+      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    }
+    el.dispatchEvent(new CompositionEvent('compositionend', { bubbles: true }));
+  }, chars);
+  await compose(['x', 'y']);
+  await expect(tester).toContainText(`10 / ${KEY_COUNT}`);
+
+  // A simulated-key tap during composition is kept when the composition ends.
+  await preview.evaluate((el: HTMLTextAreaElement) => {
+    el.dispatchEvent(new CompositionEvent('compositionstart', { bubbles: true }));
+    Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')!.set!.call(el, el.value + 'm');
+    el.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertCompositionText', isComposing: true }));
+  });
+  await page.getByRole('button', { name: 'Test Q', exact: true }).click();
+  await preview.evaluate((el) => el.dispatchEvent(new CompositionEvent('compositionend', { bubbles: true })));
+  expect(await preview.inputValue()).toMatch(/mq$/);
+
+  await tester.getByRole('button', { name: 'Clear' }).click();
+  await expect(preview).toHaveValue('');
+  await expect(tester).toContainText(`0 / ${KEY_COUNT}`);
 });
 
 test('every key has a cap and a test spot, and the two blockers are labelled hardware', async ({ page }) => {
