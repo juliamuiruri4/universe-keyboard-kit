@@ -1,13 +1,36 @@
-import type { BuildState } from '../keyboard';
+import { currentStep, type BuildState } from '../keyboard';
 
-export interface PartVisibility { damper: boolean; plate: boolean; bottom: boolean; top: boolean }
+export type SceneView = 'build' | 'exploded';
 
-/** Components appear only once their own add action has run; never as a preview of the next step. */
-export function partVisibility(s: BuildState, showAll: boolean): PartVisibility {
+export interface PartVisibility {
+  pcb: boolean;
+  switches: boolean[];
+  caps: boolean[];
+  stabilizers: boolean[];
+  screws: boolean[];
+  dampener: boolean;
+  plate: boolean;
+  tray: boolean;
+  frame: boolean;
+  /** Assembled view only: the housing base is lifted aside while awaiting its add action. */
+  pendingBottom: boolean;
+}
+
+/** Which parts exist in the scene. Both views share this build state. Components appear only after their own add action, never as a preview. */
+export function partVisibility(s: BuildState, view: SceneView, counts: { keys: number; stabs: number; screws: number }): PartVisibility {
+  const stage = currentStep(s);
+  const build = view === 'build';
+  const has = (list: number[], n: number) => Array.from({ length: n }, (_, i) => list.includes(i));
   return {
-    damper: showAll || s.dampener,
-    plate: showAll || s.plate,
-    bottom: showAll || s.bottom,
-    top: showAll || s.top,
+    pcb: stage > 0,
+    switches: has(s.switches, counts.keys),
+    caps: has(s.caps, counts.keys),
+    stabilizers: has(s.stabilizers, counts.stabs),
+    screws: has(s.screws, counts.screws),
+    dampener: s.dampener,
+    plate: s.plate,
+    tray: s.bottom,
+    frame: s.top,
+    pendingBottom: build && stage === 3 && !s.bottom,
   };
 }

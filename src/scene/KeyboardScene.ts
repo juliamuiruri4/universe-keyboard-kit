@@ -4,16 +4,16 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import {
   bumperPositions, keyCentre, keys, LAYER_LABELS, screwPositions, stabilizers, TILT_DEG,
 } from '../layout';
-import { currentStep, keycapOptions, type BuildState, type KeycapId } from '../keyboard';
+import { keycapOptions, type BuildState, type KeycapId } from '../keyboard';
+import { partVisibility, type SceneView } from './visibility';
 import { drawLegend, type CapPaint } from '../legends';
 import { capShape } from './caps';
-import { partVisibility } from './visibility';
 import {
   damperGeometry, extrude, frameGeometries, gx, gz, HOUSING, plateGeometry, pcbTexture, roundedRect,
   shadowTexture, stabilizerGeometries, switchGeometries, trayGeometry, wordmarkTexture, Y,
 } from './parts';
 
-export type SceneView = 'build' | 'exploded';
+export type { SceneView };
 
 export interface HotspotDef {
   id: string;
@@ -533,8 +533,8 @@ export class KeyboardScene {
   private applyTargets() {
     const s = this.state;
     if (!s) return;
-    const stage = currentStep(s);
-    const showAll = this.view === 'exploded' || stage === 0;
+    const exploded = this.view === 'exploded';
+    const v = partVisibility(s, this.view, { keys: this.keyItems.length, stabs: this.stabItems.length, screws: this.screwItems.length });
     let order = 0;
     const set = (anim: Anim, on: boolean, stagger = false) => {
       const target = on ? 1 : 0;
@@ -543,25 +543,24 @@ export class KeyboardScene {
       anim.delay = !this.instant && stagger && on ? Math.min(order++ * 0.014, 0.7) : 0;
     };
     this.keyItems.forEach((item, i) => {
-      set(item.swInst, showAll || s.switches.includes(i), true);
-      set(item.capInst, showAll || s.caps.includes(i), true);
+      set(item.swInst, v.switches[i], true);
+      set(item.capInst, v.caps[i], true);
     });
-    this.stabItems.forEach((item, i) => set(item.inst, showAll || s.stabilizers.includes(i), true));
-    this.screwItems.forEach((item, i) => set(item.inst, showAll || s.screws.includes(i), true));
+    this.stabItems.forEach((item, i) => set(item.inst, v.stabilizers[i], true));
+    this.screwItems.forEach((item, i) => set(item.inst, v.screws[i], true));
 
-    const pendingBottom = stage === 3 && !s.bottom;
-    const show = partVisibility(s, showAll);
-    set(this.damper.inst, show.damper);
-    set(this.damper.vis, show.damper);
-    set(this.plate.inst, show.plate);
-    set(this.plate.vis, show.plate);
-    set(this.tray.inst, show.bottom);
-    set(this.tray.vis, show.bottom);
-    set(this.frame.inst, show.top);
-    set(this.frame.vis, show.top);
+    this.pcbGroup.visible = v.pcb;
+    set(this.damper.inst, v.dampener);
+    set(this.damper.vis, v.dampener);
+    set(this.plate.inst, v.plate);
+    set(this.plate.vis, v.plate);
+    set(this.tray.inst, v.tray);
+    set(this.tray.vis, v.tray);
+    set(this.frame.inst, v.frame);
+    set(this.frame.vis, v.frame);
 
-    this.liftAnim.target = showAll ? 0 : pendingBottom ? 1.1 : s.bottom ? 0 : -0.14;
-    this.tiltAnim.target = showAll || s.bottom ? 1 : 0;
+    this.liftAnim.target = exploded ? 0 : v.pendingBottom ? 1.1 : s.bottom ? 0 : -0.14;
+    this.tiltAnim.target = exploded || s.bottom ? 1 : 0;
     this.explodeAnim.target = this.view === 'exploded' ? 1 : 0;
   }
 
