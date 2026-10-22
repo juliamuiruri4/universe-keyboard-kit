@@ -212,19 +212,40 @@ test('software keyboard input types into the preview and maps keys without dupli
   await expect(preview).toHaveValue('hi \n!hello');
   await expect(tester).toContainText(`5 / ${KEY_COUNT}`);
 
-  await preview.fill('hi \n!hell');
+  await preview.press('Backspace');
+  await preview.press('Backspace');
+  await preview.press('Backspace');
+  await expect(preview).toHaveValue('hi \n!he');
   await expect(tester).toContainText(`6 / ${KEY_COUNT}`);
   await expect(tester.locator('.tester-last')).toHaveText('GitHub icon');
 
   // Simulated keys keep working and stay in sync with the field.
   await page.getByRole('button', { name: 'Test Q', exact: true }).click();
-  await expect(preview).toHaveValue('hi \n!hellq');
+  await expect(preview).toHaveValue('hi \n!heq');
   await preview.press('Backspace');
-  await expect(preview).toHaveValue('hi \n!hell');
+  await expect(preview).toHaveValue('hi \n!he');
+
+  // Composition is credited once, when committed; pasted single characters are not credited.
+  await preview.evaluate((el: HTMLTextAreaElement) => {
+    const set = (v: string) => {
+      Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')!.set!.call(el, v);
+      el.setSelectionRange(v.length, v.length);
+    };
+    el.dispatchEvent(new CompositionEvent('compositionstart'));
+    set(el.value + 'z');
+    el.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertCompositionText', isComposing: true }));
+    el.dispatchEvent(new CompositionEvent('compositionend'));
+    set(el.value + 'w');
+    el.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertFromPaste' }));
+  });
+  await expect(preview).toHaveValue('hi \n!hezw');
+  await expect(tester).toContainText(`7 / ${KEY_COUNT}`);
+  await preview.press('Backspace');
+  await preview.press('Backspace');
 
   // A physical keypress is handled once, not also as input.
   await page.keyboard.press('a');
-  await expect(preview).toHaveValue('hi \n!hella');
+  await expect(preview).toHaveValue('hi \n!hea');
 
   await tester.getByRole('button', { name: 'Clear' }).click();
   await expect(preview).toHaveValue('');

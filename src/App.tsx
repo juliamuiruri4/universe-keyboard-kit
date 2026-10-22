@@ -50,6 +50,8 @@ export default function App() {
   const stickyRef = useRef(sticky);
   const typedRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const composingRef = useRef(false);
+  const compositionStartRef = useRef('');
   const textRef = useRef(text);
   textRef.current = text;
   const boardRef = useRef<BoardHandle>(null);
@@ -112,16 +114,36 @@ export default function App() {
   }, [markKey]);
 
   // Software keyboards report text, not key codes, so the edit itself is the source of truth.
+  const creditEdit = (before: string, after: string) => {
+    const index = keyIndexForEdit(diffText(before, after));
+    if (index < 0) return;
+    markKey(index);
+    boardRef.current?.press(index, true);
+    window.setTimeout(() => boardRef.current?.press(index, false), 120);
+  };
   const onSoftwareInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const next = e.target.value.length > MAX_TEXT ? e.target.value.slice(-MAX_TEXT) : e.target.value;
-    const index = keyIndexForEdit(diffText(textRef.current, next));
+    const raw = e.target.value;
+    const before = textRef.current;
+    const next = raw.length > MAX_TEXT ? raw.slice(-MAX_TEXT) : raw;
     textRef.current = next;
     setText(next);
-    if (index >= 0) {
-      markKey(index);
-      boardRef.current?.press(index, true);
-      window.setTimeout(() => boardRef.current?.press(index, false), 120);
+    const type = (e.nativeEvent as InputEvent).inputType;
+    if (!composingRef.current && (type === 'insertText' || type === 'insertLineBreak' || type === 'deleteContentBackward')) {
+      creditEdit(before, raw);
     }
+  };
+  const onCompositionStart = () => {
+    composingRef.current = true;
+    compositionStartRef.current = textRef.current;
+  };
+  const onCompositionEnd = () => {
+    composingRef.current = false;
+    creditEdit(compositionStartRef.current, inputRef.current?.value ?? textRef.current);
+  };
+  const keepCaretAtEnd = (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
+    const el = e.currentTarget;
+    const end = el.value.length;
+    if (el.selectionStart !== end || el.selectionEnd !== end) el.setSelectionRange(end, end);
   };
 
   const clearTest = () => {
@@ -277,7 +299,10 @@ export default function App() {
                       aria-label="Typing preview"
                       value={text}
                       onChange={onSoftwareInput}
-                      onFocus={(e) => e.target.setSelectionRange(e.target.value.length, e.target.value.length)}
+                      onFocus={keepCaretAtEnd}
+                      onSelect={keepCaretAtEnd}
+                      onCompositionStart={onCompositionStart}
+                      onCompositionEnd={onCompositionEnd}
                       rows={1}
                       enterKeyHint="enter"
                       autoCapitalize="off"

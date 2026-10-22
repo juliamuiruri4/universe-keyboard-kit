@@ -62,7 +62,7 @@ export function keyIndexForChar(char: string): number {
   if (char === ' ') return keys.findIndex((k) => k.code === 'Space');
   if (char === '\n') return keys.findIndex((k) => k.code === 'Enter');
   return keys.findIndex(({ legend }) => {
-    if (legend.kind === 'alpha') return legend.text.toLowerCase() === char.toLowerCase();
+    if (legend.kind === 'alpha') return char === legend.text.toLowerCase() || char === legend.text.toUpperCase();
     if (legend.kind === 'dual') return legend.top === char || legend.bottom === char;
     return false;
   });

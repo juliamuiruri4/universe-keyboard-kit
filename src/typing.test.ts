@@ -148,6 +148,7 @@ describe('software keyboard input', () => {
     expect(code(' ')).toBe('Space');
     expect(code('\n')).toBe('Enter');
     expect(keyIndexForChar('é')).toBe(-1);
+    expect(keyIndexForChar('\u212A')).toBe(-1);
     expect(keyIndexForChar('😀')).toBe(-1);
   });
 
