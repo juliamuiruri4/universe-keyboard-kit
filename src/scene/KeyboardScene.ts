@@ -136,6 +136,8 @@ export class KeyboardScene {
   private plate: SinglePart;
   private frame: SinglePart;
   private pcbGroup = new THREE.Group();
+  private groundShadow?: THREE.Mesh;
+  private present = new Set<string>();
   private stabLayer = new THREE.Group();
   private switchLayer = new THREE.Group();
   private capLayer = new THREE.Group();
@@ -200,7 +202,7 @@ export class KeyboardScene {
     this.scene.add(sun);
     this.scene.add(new THREE.HemisphereLight(0xffffff, 0x6c4650, 0.35));
 
-    const groundShadow = new THREE.Mesh(
+    const groundShadow = this.groundShadow = new THREE.Mesh(
       new THREE.PlaneGeometry(24, 11),
       new THREE.MeshBasicMaterial({ map: shadowTexture(), transparent: true, opacity: 0.55, depthWrite: false, color: 0x000000 }),
     );
@@ -550,6 +552,12 @@ export class KeyboardScene {
     this.screwItems.forEach((item, i) => set(item.inst, v.screws[i], true));
 
     this.pcbGroup.visible = v.pcb;
+    if (this.groundShadow) this.groundShadow.visible = v.pcb;
+    const any = (a: boolean[]) => a.some(Boolean);
+    this.present = new Set(Object.entries({
+      screws: any(v.screws), caps: any(v.caps), frame: v.frame, switches: any(v.switches), stabs: any(v.stabilizers),
+      plate: v.plate, damper: v.dampener, pcb: v.pcb, tray: v.tray,
+    }).filter(([, on]) => on).map(([id]) => id));
     set(this.damper.inst, v.dampener);
     set(this.damper.vis, v.dampener);
     set(this.plate.inst, v.plate);
@@ -738,6 +746,7 @@ export class KeyboardScene {
     const labels: Projection['labels'] = [];
     if (this.explodeAnim.value > 0.6) {
       for (const label of LAYER_LABELS) {
+        if (!this.present.has(label.id)) continue;
         corner.set(HOUSING.w / 2 + 0.1, LABEL_Y[label.id], HOUSING.d / 2 - 0.4);
         this.board.localToWorld(corner);
         const [px, py] = this.screen(corner);
