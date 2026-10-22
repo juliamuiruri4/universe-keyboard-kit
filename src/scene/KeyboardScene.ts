@@ -7,6 +7,7 @@ import {
 import { currentStep, keycapOptions, type BuildState, type KeycapId } from '../keyboard';
 import { drawLegend, type CapPaint } from '../legends';
 import { capShape } from './caps';
+import { partVisibility } from './visibility';
 import {
   damperGeometry, extrude, frameGeometries, gx, gz, HOUSING, plateGeometry, pcbTexture, roundedRect,
   shadowTexture, stabilizerGeometries, switchGeometries, trayGeometry, wordmarkTexture, Y,
@@ -548,18 +549,16 @@ export class KeyboardScene {
     this.stabItems.forEach((item, i) => set(item.inst, showAll || s.stabilizers.includes(i), true));
     this.screwItems.forEach((item, i) => set(item.inst, showAll || s.screws.includes(i), true));
 
-    const pendingDamper = stage === 2 && !s.dampener;
-    const pendingPlate = stage === 2 && s.dampener && !s.plate;
     const pendingBottom = stage === 3 && !s.bottom;
-    const pendingTop = stage === 3 && s.bottom && !s.top;
-    set(this.damper.inst, showAll || s.dampener);
-    set(this.damper.vis, showAll || s.dampener || pendingDamper);
-    set(this.plate.inst, showAll || s.plate);
-    set(this.plate.vis, showAll || s.plate || pendingPlate);
-    set(this.tray.inst, showAll || s.bottom);
-    set(this.tray.vis, showAll || s.bottom || pendingBottom);
-    set(this.frame.inst, showAll || s.top);
-    set(this.frame.vis, showAll || s.top || pendingTop);
+    const show = partVisibility(s, showAll);
+    set(this.damper.inst, show.damper);
+    set(this.damper.vis, show.damper);
+    set(this.plate.inst, show.plate);
+    set(this.plate.vis, show.plate);
+    set(this.tray.inst, show.bottom);
+    set(this.tray.vis, show.bottom);
+    set(this.frame.inst, show.top);
+    set(this.frame.vis, show.top);
 
     this.liftAnim.target = showAll ? 0 : pendingBottom ? 1.1 : s.bottom ? 0 : -0.14;
     this.tiltAnim.target = showAll || s.bottom ? 1 : 0;

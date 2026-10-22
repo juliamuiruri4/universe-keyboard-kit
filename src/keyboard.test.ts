@@ -5,6 +5,7 @@ import {
 } from './keyboard';
 import { bumperPositions, stabilizers } from './layout';
 import { galleryPhotos } from './gallery';
+import { partVisibility } from './scene/visibility';
 
 const run = (actions: BuildAction[], from: BuildState = initialState) => actions.reduce(buildReducer, from);
 const finished = (): BuildState => run([
@@ -129,5 +130,33 @@ describe('gallery', () => {
     expect(galleryPhotos).toHaveLength(34);
     expect(new Set(galleryPhotos.map((p) => p.id)).size).toBe(34);
     expect(galleryPhotos.every((p) => p.alt.length > 10)).toBe(true);
+  });
+});
+
+describe('component visibility at transition boundaries', () => {
+  const vis = (s: BuildState, all = false) => partVisibility(s, all);
+  const none = { damper: false, plate: false, bottom: false, top: false };
+  const afterStabs = run([{ type: 'open' }, { type: 'fill' }, { type: 'fill' }]);
+
+  it('does not preview the dampener after stabilizers finish', () => {
+    expect(vis(afterStabs)).toEqual(none);
+  });
+  it('shows only the dampener after it is added, not the plate', () => {
+    expect(vis(run([{ type: 'dampener' }], afterStabs))).toEqual({ ...none, damper: true });
+  });
+  it('keeps the bottom housing absent after Seat all', () => {
+    const seated = run([{ type: 'dampener' }, { type: 'plate' }, { type: 'fill' }], afterStabs);
+    expect(currentStep(seated)).toBe(3);
+    expect(vis(seated)).toEqual({ ...none, damper: true, plate: true });
+  });
+  it('introduces bottom and top only via their add actions', () => {
+    const seated = run([{ type: 'dampener' }, { type: 'plate' }, { type: 'fill' }], afterStabs);
+    const bottom = run([{ type: 'bottom' }], seated);
+    expect(vis(bottom)).toEqual({ damper: true, plate: true, bottom: true, top: false });
+    expect(vis(run([{ type: 'top' }], bottom)).top).toBe(true);
+  });
+  it('still shows everything in the exploded view and in finished builds', () => {
+    expect(vis(initialState, true)).toEqual({ damper: true, plate: true, bottom: true, top: true });
+    expect(vis(finished())).toEqual({ damper: true, plate: true, bottom: true, top: true });
   });
 });
