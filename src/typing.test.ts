@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { keys, unboxParts } from './keyboard';
-import { applyKeyToText, diffText, isShiftKey, keyIndexForChar, keyIndexForEdit, MAX_TEXT, TAB_WIDTH } from './typing';
+import { applyKeyToText, clampText, diffText, isShiftKey, keyIndexForChar, keyIndexForEdit, MAX_TEXT, TAB_WIDTH } from './typing';
 import {
   applyHomography, BOX_HULL, boxRect, homography, LID_OPEN_DEG, lidMatrix3d, lidQuad, lidShowsUnderside, partSlots, pointInPolygon,
   polygonsOverlap, QUAD, quadPoints, rectCorners, SCENE_H, SCENE_W, slotRect,
@@ -159,5 +159,14 @@ describe('software keyboard input', () => {
     expect(keyIndexForEdit({ removed: '', added: 'hello' })).toBe(-1);
     expect(keyIndexForEdit({ removed: 'a', added: 'b' })).toBe(-1);
     expect(keyIndexForEdit({ removed: '', added: '' })).toBe(-1);
+  });
+});
+
+describe('text limit', () => {
+  it('never splits a surrogate pair', () => {
+    const text = '\u{1F600}' + 'a'.repeat(MAX_TEXT - 1);
+    expect(clampText(text)).toBe(text);
+    expect(clampText(`${text}b`)).toBe('a'.repeat(MAX_TEXT - 1) + 'b');
+    expect(applyKeyToText(text, key('KeyB'), off)).toBe('a'.repeat(MAX_TEXT - 1) + 'b');
   });
 });

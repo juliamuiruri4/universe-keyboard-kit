@@ -8,6 +8,13 @@ export interface Mods {
 export const TAB_WIDTH = 4;
 export const MAX_TEXT = 2000;
 
+/** Keeps the last MAX_TEXT characters without splitting a surrogate pair. */
+export function clampText(text: string): string {
+  if (text.length <= MAX_TEXT) return text;
+  const chars = Array.from(text);
+  return chars.length > MAX_TEXT ? chars.slice(chars.length - MAX_TEXT).join('') : text;
+}
+
 /** What one key press does to the typed text. Keys without a printed character leave it unchanged. */
 export function applyKeyToText(text: string, key: KeySpec, mods: Mods): string {
   let next = text;
@@ -35,7 +42,7 @@ export function applyKeyToText(text: string, key: KeySpec, mods: Mods): string {
       }
     }
   }
-  return next.length > MAX_TEXT ? next.slice(next.length - MAX_TEXT) : next;
+  return clampText(next);
 }
 
 export const isShiftKey = (key: KeySpec) => key.code === 'ShiftLeft' || key.code === 'ShiftRight';

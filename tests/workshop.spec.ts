@@ -249,12 +249,18 @@ test('software keyboard input types into the preview and maps keys without dupli
 
   // A single character committed at the text limit still earns its key.
   await preview.fill('a'.repeat(2000));
-  await preview.evaluate((el: HTMLTextAreaElement) => {
+  const compose = (chars: string[]) => preview.evaluate(async (el: HTMLTextAreaElement, steps: string[]) => {
+    const base = el.value;
+    const setValue = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')!.set!;
     el.dispatchEvent(new CompositionEvent('compositionstart', { bubbles: true }));
-    Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')!.set!.call(el, el.value + 'y');
-    el.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertCompositionText', isComposing: true }));
+    for (const c of steps) {
+      setValue.call(el, base + c);
+      el.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertCompositionText', isComposing: true }));
+      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    }
     el.dispatchEvent(new CompositionEvent('compositionend', { bubbles: true }));
-  });
+  }, chars);
+  await compose(['x', 'y']);
   await expect(tester).toContainText(`10 / ${KEY_COUNT}`);
 
   await tester.getByRole('button', { name: 'Clear' }).click();

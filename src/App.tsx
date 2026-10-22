@@ -5,7 +5,7 @@ import Icon, { GitHubMark } from './Icon';
 import KeyboardBoard, { type BoardHandle } from './KeyboardBoard';
 import Unbox from './Unbox';
 import { keyClick } from './sound';
-import { applyKeyToText, diffText, isShiftKey, keyIndexForEdit, MAX_TEXT, type Mods } from './typing';
+import { applyKeyToText, diffText, isShiftKey, keyIndexForEdit, clampText, type Mods } from './typing';
 import {
   buildReducer, currentStep, initialState, KEY_COUNT, keycapOptions, keys, primaryAction, progressCount,
   restoreBuild, secondaryAction, steps, STORAGE_KEY,
@@ -126,7 +126,7 @@ export default function App() {
     const raw = e.target.value;
     rawRef.current = raw;
     const before = textRef.current;
-    const next = raw.length > MAX_TEXT ? raw.slice(-MAX_TEXT) : raw;
+    const next = composingRef.current ? raw : clampText(raw);
     textRef.current = next;
     setText(next);
     const type = (e.nativeEvent as InputEvent).inputType;
@@ -142,6 +142,9 @@ export default function App() {
   const onCompositionEnd = () => {
     composingRef.current = false;
     creditEdit(compositionStartRef.current, rawRef.current);
+    const clamped = clampText(rawRef.current);
+    textRef.current = clamped;
+    setText(clamped);
   };
   const keepCaretAtEnd = (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
     const el = e.currentTarget;
