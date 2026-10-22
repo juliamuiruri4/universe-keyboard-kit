@@ -51,6 +51,7 @@ export default function App() {
   const typedRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const composingRef = useRef(false);
+  const rawRef = useRef('');
   const compositionStartRef = useRef('');
   const textRef = useRef(text);
   textRef.current = text;
@@ -123,6 +124,7 @@ export default function App() {
   };
   const onSoftwareInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const raw = e.target.value;
+    rawRef.current = raw;
     const before = textRef.current;
     const next = raw.length > MAX_TEXT ? raw.slice(-MAX_TEXT) : raw;
     textRef.current = next;
@@ -135,10 +137,11 @@ export default function App() {
   const onCompositionStart = () => {
     composingRef.current = true;
     compositionStartRef.current = textRef.current;
+    rawRef.current = textRef.current;
   };
   const onCompositionEnd = () => {
     composingRef.current = false;
-    creditEdit(compositionStartRef.current, inputRef.current?.value ?? textRef.current);
+    creditEdit(compositionStartRef.current, rawRef.current);
   };
   const keepCaretAtEnd = (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
     const el = e.currentTarget;
@@ -163,6 +166,7 @@ export default function App() {
     if (route !== 'build' || stage !== 6) return;
     const index = (code: string) => keys.findIndex((k) => k.code === code);
     const down = (e: KeyboardEvent) => {
+      if (e.isComposing || e.keyCode === 229) return;
       if (noisy.includes(e.key) || e.ctrlKey || e.metaKey || e.altKey) return;
       const i = index(e.code);
       if (i < 0) return;

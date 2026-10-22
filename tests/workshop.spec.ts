@@ -231,21 +231,31 @@ test('software keyboard input types into the preview and maps keys without dupli
       Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')!.set!.call(el, v);
       el.setSelectionRange(v.length, v.length);
     };
-    el.dispatchEvent(new CompositionEvent('compositionstart'));
+    el.dispatchEvent(new CompositionEvent('compositionstart', { bubbles: true }));
     set(el.value + 'z');
     el.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertCompositionText', isComposing: true }));
-    el.dispatchEvent(new CompositionEvent('compositionend'));
+    el.dispatchEvent(new CompositionEvent('compositionend', { bubbles: true }));
     set(el.value + 'w');
     el.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertFromPaste' }));
   });
   await expect(preview).toHaveValue('hi \n!hezw');
-  await expect(tester).toContainText(`7 / ${KEY_COUNT}`);
+  await expect(tester).toContainText(`8 / ${KEY_COUNT}`);
   await preview.press('Backspace');
   await preview.press('Backspace');
 
   // A physical keypress is handled once, not also as input.
   await page.keyboard.press('a');
   await expect(preview).toHaveValue('hi \n!hea');
+
+  // A single character committed at the text limit still earns its key.
+  await preview.fill('a'.repeat(2000));
+  await preview.evaluate((el: HTMLTextAreaElement) => {
+    el.dispatchEvent(new CompositionEvent('compositionstart', { bubbles: true }));
+    Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')!.set!.call(el, el.value + 'y');
+    el.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertCompositionText', isComposing: true }));
+    el.dispatchEvent(new CompositionEvent('compositionend', { bubbles: true }));
+  });
+  await expect(tester).toContainText(`10 / ${KEY_COUNT}`);
 
   await tester.getByRole('button', { name: 'Clear' }).click();
   await expect(preview).toHaveValue('');
